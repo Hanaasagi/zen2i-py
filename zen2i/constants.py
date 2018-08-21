@@ -1,4 +1,4 @@
-from frozendict import frozendict
+from zen2i.frozendict import frozendict
 
 
 KANNUM = frozendict({
