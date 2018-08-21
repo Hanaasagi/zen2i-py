@@ -1,32 +1,35 @@
 import re
-from constants import ALL_KANSUUJI, MAX_LOOP, KANNUM, KANORDER_F, KANORDER
+from zen2i.constants import ALL_KANSUUJI, \
+    MAX_LOOP, KANNUM, KANORDER_F, KANORDER
+
+from typing import List
 
 
-def zen2i(string):
+def zen2i(string: str) -> str:
     result = kanji2num(string)
     return zen2han(result)
 
 
-def kanji2num(string):
+def kanji2num(string: str) -> str:
     arr = split_kansuuji(string)
     arr = split_kansuuji_detail(arr)
     result = convert_kansuuji(arr)
     return ''.join(map(str, result))
 
 
-def zen2han(string):
+def zen2han(string: str) -> str:
     return string.translate(
         str.maketrans('０１２３４５６７８９', '0123456789')
     )
 
 
 # 漢数字のところだけ切り出す
-def split_kansuuji(string):
+def split_kansuuji(string: str) -> List[str]:
     return re.split(rf'([{"".join(ALL_KANSUUJI)}]+)', string)
 
 
 # 位を表す数ではない普通の漢数字が続いていたらわける
-def split_kansuuji_detail(arr):
+def split_kansuuji_detail(arr: List[str]) -> List[str]:
     array_tmp = arr.copy()
     array_result = arr.copy()
     for _ in range(MAX_LOOP):
@@ -38,7 +41,7 @@ def split_kansuuji_detail(arr):
     return array_result
 
 
-def split_kansuuji_detail_inner(arr):
+def split_kansuuji_detail_inner(arr: List[str]) -> List[str]:
     result = []
     for a in arr:
         if re.match(rf'([{"".join(ALL_KANSUUJI)}]+)', a):
@@ -52,7 +55,7 @@ def split_kansuuji_detail_inner(arr):
 
 # ４桁ごとの単位（万、億、兆など）でまずわけ、
 # それぞれに対して漢数字→数字を実行している。
-def convert_kansuuji(arr):
+def convert_kansuuji(arr: List[str]) -> List[str]:
     result = []
     for a in arr:
         if re.match(rf'[{"".join(ALL_KANSUUJI)}]+', a):
@@ -72,7 +75,7 @@ def convert_kansuuji(arr):
                 for (_1_9, order) in match2:
                     tmp = tmp + KANNUM[_1_9] * KANORDER[order]
                 ret = ret + tmp * KANORDER_F[order_f]
-            result.append(ret)
+            result.append(str(ret))
         else:
             result.append(a)
     return result
