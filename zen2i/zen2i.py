@@ -6,14 +6,14 @@ from typing import List
 
 
 def zen2i(string: str) -> str:
-    result = kanji2num(string)
+    result = _kanji2num(string)
     return zen2han(result)
 
 
-def kanji2num(string: str) -> str:
-    arr = split_kansuuji(string)
-    arr = split_kansuuji_detail(arr)
-    result = convert_kansuuji(arr)
+def _kanji2num(string: str) -> str:
+    arr = _split_kansuuji(string)
+    arr = _split_kansuuji_detail(arr)
+    result = _convert_kansuuji(arr)
     return ''.join(map(str, result))
 
 
@@ -24,16 +24,16 @@ def zen2han(string: str) -> str:
 
 
 # 漢数字のところだけ切り出す
-def split_kansuuji(string: str) -> List[str]:
+def _split_kansuuji(string: str) -> List[str]:
     return re.split(rf'([{"".join(ALL_KANSUUJI)}]+)', string)
 
 
 # 位を表す数ではない普通の漢数字が続いていたらわける
-def split_kansuuji_detail(arr: List[str]) -> List[str]:
+def _split_kansuuji_detail(arr: List[str]) -> List[str]:
     array_tmp = arr.copy()
     array_result = arr.copy()
     for _ in range(MAX_LOOP):
-        array_result = split_kansuuji_detail_inner(array_result)
+        array_result = _split_kansuuji_detail_inner(array_result)
         if array_result == array_tmp:
             return array_result
         else:
@@ -41,7 +41,7 @@ def split_kansuuji_detail(arr: List[str]) -> List[str]:
     return array_result
 
 
-def split_kansuuji_detail_inner(arr: List[str]) -> List[str]:
+def _split_kansuuji_detail_inner(arr: List[str]) -> List[str]:
     result = []
     for a in arr:
         if re.match(rf'([{"".join(ALL_KANSUUJI)}]+)', a):
@@ -55,7 +55,7 @@ def split_kansuuji_detail_inner(arr: List[str]) -> List[str]:
 
 # ４桁ごとの単位（万、億、兆など）でまずわけ、
 # それぞれに対して漢数字→数字を実行している。
-def convert_kansuuji(arr: List[str]) -> List[str]:
+def _convert_kansuuji(arr: List[str]) -> List[str]:
     result = []
     for a in arr:
         if re.match(rf'[{"".join(ALL_KANSUUJI)}]+', a):
@@ -79,6 +79,11 @@ def convert_kansuuji(arr: List[str]) -> List[str]:
         else:
             result.append(a)
     return result
+
+
+__all__ = [
+    'zen2i'
+]
 
 
 if __name__ == '__main__':
